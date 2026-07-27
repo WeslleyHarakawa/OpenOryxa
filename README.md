@@ -3,7 +3,7 @@
 **Self-hosted AI agent management platform.** Deploy and manage OpenClaw AI agents on your own VPS with one command.
 
 ```bash
-curl -fsSL https://get.openoryxa.digital | bash
+curl -fsSL https://get.oryxa.digital | bash
 ```
 
 > MIT License · Open Source · Self-hosted
@@ -35,7 +35,7 @@ curl -fsSL https://get.openoryxa.digital | bash
 > ## Quick Start
 >
 > ```bash
-> curl -fsSL https://get.openoryxa.digital | bash
+> curl -fsSL https://get.oryxa.digital | bash
 > ```
 >
 > The installer will:
@@ -48,15 +48,15 @@ curl -fsSL https://get.openoryxa.digital | bash
 >         
 >          6. ## Documentation
 >         
->          7. Full documentation at **[openoryxa.digital/docs](https://openoryxa.digital/docs)**
+>          7. Full documentation at **[oryxa.digital/docs](https://oryxa.digital/docs)**
 >
-> - [Install](https://openoryxa.digital/docs#install)
-> - - [Configure](https://openoryxa.digital/docs#configure)
->   - - [Create an agent](https://openoryxa.digital/docs#create-agent)
->     - - [WhatsApp setup](https://openoryxa.digital/docs#whatsapp)
->       - - [Telegram setup](https://openoryxa.digital/docs#telegram)
->         - - [AI Providers](https://openoryxa.digital/docs#providers)
->           - - [Troubleshooting](https://openoryxa.digital/docs#troubleshooting)
+> - [Install](https://oryxa.digital/docs#install)
+> - - [Configure](https://oryxa.digital/docs#configure)
+>   - - [Create an agent](https://oryxa.digital/docs#create-agent)
+>     - - [WhatsApp setup](https://oryxa.digital/docs#whatsapp)
+>       - - [Telegram setup](https://oryxa.digital/docs#telegram)
+>         - - [AI Providers](https://oryxa.digital/docs#providers)
+>           - - [Troubleshooting](https://oryxa.digital/docs#troubleshooting)
 >            
 >             - ---
 >
