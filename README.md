@@ -1,69 +1,66 @@
 # OpenOryxa
 
-**Self-hosted AI agent management platform.** Deploy and manage OpenClaw AI agents on your own VPS with one command.
+**Self-hosted management platform for multiple OpenClaw AI agents.**
+
+Run unlimited AI agents on your own VPS — one dashboard, isolated Docker containers, your rules. No subscriptions, no vendor lock-in.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+---
+
+## What is OpenOryxa?
+
+OpenOryxa is a management layer on top of [OpenClaw](https://github.com/openclaw/openclaw). Install once on any Ubuntu VPS and get a dashboard to create and manage as many isolated AI agent instances as you need — each with its own config, API key, WhatsApp number, model, and browser.
+
+```
+Your VPS → Traefik (SSL) → OpenOryxa Dashboard → [Agent 1] [Agent 2] [Agent N...]
+```
+
+Each agent runs in its own Docker container. Create new ones from the dashboard in seconds.
+
+---
+
+## Features
+
+- **One-command install** — a single `curl` sets up Docker, Traefik, SSL, and the dashboard
+- **Multi-agent** — unlimited OpenClaw instances, each isolated in its own container
+- **Bring your own API key** — OpenAI, Anthropic, Gemini, or any compatible provider
+- **WhatsApp & Telegram** — QR-code pairing, no third-party bridges
+- **Browser automation** — each agent gets a dedicated Chromium instance
+- **MIT licensed** — no telemetry, no lock-in, fork and modify freely
+
+---
+
+## Quick Start
 
 ```bash
 curl -fsSL https://get.oryxa.digital | bash
 ```
 
-> MIT License · Open Source · Self-hosted
->
-> ---
->
-> ## What is OpenOryxa?
->
-> OpenOryxa is an open source platform for deploying and managing AI agents powered by [OpenClaw](https://github.com/openclaw). It gives you a web dashboard to create, configure, and monitor multiple AI agents — each running in its own isolated Docker container on infrastructure you control.
->
-> - **[*] One-command install** — A single curl command sets up everything: Docker, Traefik with automatic SSL, and the management dashboard.
-> - - **[*] Multi-agent management** — Create and manage multiple AI agents from a single dashboard. Each agent runs in its own isolated container.
->   - - **[*] Bring your own API keys** — Connect OpenAI, Anthropic, Gemini, or any compatible provider. Your keys stay on your server.
->     - - **[*] WhatsApp & Telegram** — Connect agents to WhatsApp and Telegram with built-in pairing support.
->       - - **[*] Browser automation** — Each agent gets a dedicated Chromium instance for web browsing and automation.
->         - - **[*] Fully open source** — MIT licensed. Fork it, modify it, run it anywhere. No telemetry, no phoning home.
->          
->           - ---
->
-> ## Requirements
->
-> - Ubuntu 22.04+ VPS (1GB RAM minimum)
-> - - Ports 80 and 443 open
->   - - A domain name pointing to your server
->     - - At least one AI provider API key (OpenAI, Anthropic, Gemini, etc.)
->      
->       - ---
->
-> ## Quick Start
->
-> ```bash
-> curl -fsSL https://get.oryxa.digital | bash
-> ```
->
-> The installer will:
-> 1. Install Docker and Docker Compose
-> 2. 2. Deploy Traefik with automatic Let's Encrypt SSL
->    3. 3. Pull and start the OpenOryxa manager
->       4. 4. Print your dashboard URL and admin password
->         
->          5. ---
->         
->          6. ## Documentation
->         
->          7. Full documentation at **[oryxa.digital/docs](https://oryxa.digital/docs)**
->
-> - [Install](https://oryxa.digital/docs#install)
-> - - [Configure](https://oryxa.digital/docs#configure)
->   - - [Create an agent](https://oryxa.digital/docs#create-agent)
->     - - [WhatsApp setup](https://oryxa.digital/docs#whatsapp)
->       - - [Telegram setup](https://oryxa.digital/docs#telegram)
->         - - [AI Providers](https://oryxa.digital/docs#providers)
->           - - [Troubleshooting](https://oryxa.digital/docs#troubleshooting)
->            
->             - ---
->
-> ## License
->
-> MIT — see [LICENSE](./LICENSE)
->
-> ---
->
-> Made by [@weslleyharakawa](https://x.com/weslleyharakawa)
+Requires Ubuntu 22.04+ and root access. Takes ~3 minutes.
+
+After install, visit `https://dashboard.yourdomain.com` and create your first agent.
+
+Full guide: [docs.oryxa.digital](https://docs.oryxa.digital)
+
+---
+
+## Documentation
+
+- [Installation](https://docs.oryxa.digital)
+- [Creating agents](https://docs.oryxa.digital)
+- [WhatsApp setup](https://docs.oryxa.digital)
+- [Telegram setup](https://docs.oryxa.digital)
+- [Configuration reference](https://docs.oryxa.digital)
+
+---
+
+## Contributing
+
+Issues and pull requests are welcome. Open an issue before submitting large changes.
+
+---
+
+## License
+
+[MIT](LICENSE) — © 2026 Weslley Harakawa
