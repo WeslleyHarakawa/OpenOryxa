@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # OpenOryxa Installer
-# https://openoryxa.digital
-# Usage: curl -fsSL https://get.openoryxa.digital | bash
+# https://oryxa.digital
+# Usage: curl -fsSL https://get.oryxa.digital | bash
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -27,7 +27,7 @@ print_banner() {
   echo -e "${CYAN}  ██    ██ ██      ██      ██  ██ ██ ██    ██ ██   ██    ██    ██   ██ ██   ██ ${RESET}"
   echo -e "${BOLD}  ██████  ██      ███████ ██   ████  ██████  ██   ██    ██    ██   ██ ██   ██ ${RESET}"
   echo ""
-  echo -e "  ${CYAN}Self-hosted AI Agent Platform${RESET}  ·  ${YELLOW}openoryxa.digital${RESET}"
+  echo -e "  ${CYAN}Self-hosted AI Agent Platform${RESET}  ·  ${YELLOW}oryxa.digital${RESET}"
   echo ""
 }
 
@@ -37,7 +37,7 @@ warn() { echo -e "    ${YELLOW}!${RESET} $1"; }
 err()  { echo -e "    ${RED}✗${RESET} $1"; exit 1; }
 
 require_root() {
-  [[ $EUID -eq 0 ]] || err "Please run as root: sudo bash <(curl -fsSL https://get.openoryxa.digital)"
+  [[ $EUID -eq 0 ]] || err "Please run as root: sudo bash <(curl -fsSL https://get.oryxa.digital)"
 }
 
 check_os() {
@@ -249,7 +249,7 @@ print_success() {
   echo -e "  2. Visit the dashboard and create your first agent"
   echo -e "  3. Connect WhatsApp or Telegram"
   echo ""
-  echo -e "  ${CYAN}Docs:${RESET} https://openoryxa.digital/docs"
+  echo -e "  ${CYAN}Docs:${RESET} https://oryxa.digital/docs"
   echo -e "  ${CYAN}GitHub:${RESET} https://github.com/WeslleyHarakawa/openoryxa"
   echo ""
 }
