@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # OpenOryxa Installer
-# https://oryxa.digital
-# Usage: curl -fsSL https://get.oryxa.digital | bash
+# https://openoryxa.digital
+# Usage: curl -fsSL https://get.openoryxa.digital | bash
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -27,7 +27,7 @@ print_banner() {
   echo -e "${CYAN}  ██    ██ ██      ██      ██  ██ ██ ██    ██ ██   ██    ██    ██   ██ ██   ██ ${RESET}"
   echo -e "${BOLD}  ██████  ██      ███████ ██   ████  ██████  ██   ██    ██    ██   ██ ██   ██ ${RESET}"
   echo ""
-  echo -e "  ${CYAN}Self-hosted AI Agent Platform${RESET}  ·  ${YELLOW}oryxa.digital${RESET}"
+  echo -e "  ${CYAN}Self-hosted AI Agent Platform${RESET}  ·  ${YELLOW}openoryxa.digital${RESET}"
   echo ""
 }
 
@@ -37,7 +37,7 @@ warn() { echo -e "    ${YELLOW}!${RESET} $1"; }
 err()  { echo -e "    ${RED}✗${RESET} $1"; exit 1; }
 
 require_root() {
-  [[ $EUID -eq 0 ]] || err "Please run as root: sudo bash <(curl -fsSL https://get.oryxa.digital)"
+  [[ $EUID -eq 0 ]] || err "Please run as root: sudo bash <(curl -fsSL https://get.openoryxa.digital)"
 }
 
 check_os() {
@@ -109,6 +109,29 @@ collect_config() {
     ADMIN_PASS=$(openssl rand -base64 18 | tr -d '=/+')
     warn "Generated password: ${BOLD}$ADMIN_PASS${RESET} (save this!)"
   fi
+
+  echo ""
+  echo "  AI Provider (used as default for new agents):"
+  echo "    1) OpenAI          (GPT-4o, GPT-4.1, ...)"
+  echo "    2) Anthropic       (Claude 3.5, Claude 4, ...)"
+  echo "    3) Google Gemini   (Gemini 2.0, ...)"
+  echo "    4) Ollama          (local models, no key needed)"
+  echo "    5) Skip            (configure later in dashboard)"
+  echo ""
+  read -rp "  Choose provider [1-5, default 5]: " AI_CHOICE
+
+  AI_PROVIDER=""
+  AI_API_KEY=""
+  case "${AI_CHOICE:-5}" in
+    1) AI_PROVIDER="openai"
+       read -rsp "  OpenAI API key (sk-...): " AI_API_KEY; echo "" ;;
+    2) AI_PROVIDER="anthropic"
+       read -rsp "  Anthropic API key (sk-ant-...): " AI_API_KEY; echo "" ;;
+    3) AI_PROVIDER="gemini"
+       read -rsp "  Google Gemini API key: " AI_API_KEY; echo "" ;;
+    4) AI_PROVIDER="ollama" ;;
+    *) warn "AI provider skipped — configure in the dashboard after install." ;;
+  esac
 }
 
 write_config() {
@@ -122,6 +145,8 @@ DOMAIN=${DOMAIN}
 ACME_EMAIL=${ACME_EMAIL}
 CLOUDFLARE_API_TOKEN=${CF_TOKEN:-}
 ADMIN_PASSWORD=${ADMIN_PASS}
+DEFAULT_AI_PROVIDER=${AI_PROVIDER:-}
+DEFAULT_AI_API_KEY=${AI_API_KEY:-}
 EOF
 
   chmod 600 "$INSTALL_DIR/.env"
@@ -222,8 +247,11 @@ deploy_manager() {
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "$INSTALL_DIR/data:/data" \
     -e "DOMAIN=${DOMAIN}" \
+    -e "ADMIN_EMAIL=admin@${DOMAIN}" \
     -e "ADMIN_PASSWORD=${ADMIN_PASSWORD}" \
     -e "TRAEFIK_NETWORK=${TRAEFIK_NET}" \
+    -e "DEFAULT_AI_PROVIDER=${DEFAULT_AI_PROVIDER:-}" \
+    -e "DEFAULT_AI_API_KEY=${DEFAULT_AI_API_KEY:-}" \
     -l "traefik.enable=true" \
     -l "traefik.http.routers.manager.rule=Host(\`dashboard.${DOMAIN}\`)" \
     -l "traefik.http.routers.manager.entrypoints=websecure" \
@@ -242,6 +270,7 @@ print_success() {
   echo ""
   source "$INSTALL_DIR/.env"
   echo -e "  Dashboard:  ${CYAN}https://dashboard.${DOMAIN}${RESET}"
+  echo -e "  Login:      ${YELLOW}admin@${DOMAIN}${RESET}"
   echo -e "  Password:   ${YELLOW}${ADMIN_PASSWORD}${RESET}"
   echo ""
   echo -e "  ${BOLD}Next steps:${RESET}"
@@ -249,7 +278,7 @@ print_success() {
   echo -e "  2. Visit the dashboard and create your first agent"
   echo -e "  3. Connect WhatsApp or Telegram"
   echo ""
-  echo -e "  ${CYAN}Docs:${RESET} https://oryxa.digital/docs"
+  echo -e "  ${CYAN}Docs:${RESET} https://openoryxa.digital/docs"
   echo -e "  ${CYAN}GitHub:${RESET} https://github.com/WeslleyHarakawa/openoryxa"
   echo ""
 }
