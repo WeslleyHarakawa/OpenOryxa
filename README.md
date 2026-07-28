@@ -12,7 +12,7 @@ Run unlimited AI agents on your own VPS — one dashboard, isolated Docker conta
 
 ## What is OpenOryxa?
 
-OpenOryxa is a management layer on top of [OpenClaw](https://github.com/openclaw/openclaw). Install once on any Ubuntu VPS and get a dashboard to create and manage as many isolated AI agent instances as you need — each with its own phone number, API key, model, and dedicated Chromium browser for web automation.
+OpenOryxa is a self-hosted management platform for multiple OpenClaw AI agents. Install once on any Ubuntu VPS and get a dashboard to create and manage as many isolated agent instances as you need — each with its own phone number, API key, model, and dedicated Chromium browser for web automation.
 
 Unlike a single OpenClaw instance, OpenOryxa lets you run **multiple agents in the same Telegram or WhatsApp group** — each with a different personality, trigger, or role. Think of it as your own private **SaaS of OpenClaw agents**.
 
@@ -58,7 +58,6 @@ Full docs at **[docs.oryxa.digital](https://docs.oryxa.digital)**
 - [Connect WhatsApp](https://docs.oryxa.digital#whatsapp)
 - [Connect Telegram](https://docs.oryxa.digital#telegram)
 - [AI Providers](https://docs.oryxa.digital#providers)
-- [OpenClaw docs](https://docs.openclaw.ai)
 
 ---
 
