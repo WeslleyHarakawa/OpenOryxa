@@ -96,13 +96,6 @@ Issues and pull requests are welcome. Open an issue before submitting large chan
 
 ---
 
-## Author
-
-Created by **Rodolfo Basilio** ([@rodolfobasilio](https://rodolfobasilio.com)).
-Built and maintained by [Weslley Harakawa](https://github.com/WeslleyHarakawa).
-
----
-
 ## License
 
-[MIT](LICENSE) — © 2026 Weslley Harakawa
+[MIT](LICENSE) — © 2026 [Weslley Harakawa](https://github.com/WeslleyHarakawa)
