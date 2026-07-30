@@ -131,7 +131,7 @@
                 </header>
                 <section class="dashboard-stats">
                     <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-server"></i></div><div class="stat-info"><h3>185.250.36.90</h3><p data-i18n="stats.vps_ip">VPS na Contabo</p></div></div>
-                    <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-cloud"></i></div><div class="stat-info"><h3>oryxa.digital</h3><p data-i18n="stats.base_domain">Domínio Base</p></div></div>
+                    <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-cloud"></i></div><div class="stat-info"><h3 id="statBaseDomain">oryxa.digital</h3><p data-i18n="stats.base_domain">Domínio Base</p></div></div>
                     <div class="stat-card"><div class="stat-icon"><i class="fa-solid fa-microchip"></i></div><div class="stat-info"><h3 id="activeInstancesCount">0</h3><p data-i18n="stats.active_agents">Agentes Ativos</p></div></div>
                 </section>
                 <section class="instances-grid" id="instancesGrid"></section>
@@ -411,6 +411,23 @@
         </div>
     </div>
 
+    <script>
+    (function() {
+        var host = window.location.hostname;
+        var parts = host.split('.');
+        var base = parts.length > 1 ? parts.slice(1).join('.') : 'oryxa.digital';
+        window._ORYXA_DOMAIN = base;
+        document.addEventListener('DOMContentLoaded', function() {
+            var stat = document.getElementById('statBaseDomain');
+            if (stat) stat.textContent = base;
+            document.querySelectorAll('.domain-suffix').forEach(function(el) { el.textContent = '.' + base; });
+            var em = document.getElementById('agentEmail');
+            if (em) em.placeholder = 'ex: agent@' + base;
+            var domSuffix2 = document.getElementById('editAgentDomainSuffix');
+            if (domSuffix2) domSuffix2.textContent = '.' + base;
+        });
+    })();
+    </script>
     <script src="app.js?v=23"></script>
 </body>
 </html>
