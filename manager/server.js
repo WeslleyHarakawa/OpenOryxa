@@ -17,6 +17,7 @@ const USERS_PATH = path.join(BASE_DIR, '.users.json');
 const SESSION_SECRET = process.env.SESSION_SECRET || 'openoryxa-' + crypto.randomBytes(16).toString('hex');
 const ADMIN_DEFAULT_PASSWORD = process.env.ADMIN_PASSWORD || 'openoryxa';
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@localhost';
+const DOMAIN = process.env.DOMAIN || 'oryxa.digital';
 
 const PROVIDER_ENV = {
     openai:     ['OPENAI_API_KEY'],
@@ -140,14 +141,14 @@ app.use(session({
 app.use((req, res, next) => {
     const ck = req.headers.cookie || '';
     if (ck.indexOf('connect.sid=') !== -1) {
-        res.append('Set-Cookie', 'connect.sid=; Path=/; Domain=.oryxa.digital; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax');
+        res.append('Set-Cookie', `connect.sid=; Path=/; Domain=.${DOMAIN}; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax`);
         res.append('Set-Cookie', 'connect.sid=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax');
     }
     next();
 });
 
 // In-process cross-subdomain browser-auth tokens. Maps tokenHex -> { userId, expiresAt }.
-// Issued on /api/login (cookie oryxa_token, Domain=.oryxa.digital) so the
+// Issued on /api/login (cookie oryxa_token, Domain=.${DOMAIN}) so the
 // per-agent browser sidecars can authorize via forwardAuth without
 // requiring the host-only session cookie to traverse subdomains.
 const browserTokens = new Map();
@@ -163,7 +164,7 @@ function resolveBrowserToken(tok) {
     return rec.userId;
 }
 function setBrowserTokenCookie(res, token) {
-    res.append('Set-Cookie', `oryxa_token=${token}; Path=/; Domain=.oryxa.digital; Max-Age=${7*24*60*60}; HttpOnly; Secure; SameSite=Lax`);
+    res.append('Set-Cookie', `oryxa_token=${token}; Path=/; Domain=.${DOMAIN}; Max-Age=${7*24*60*60}; HttpOnly; Secure; SameSite=Lax`);
 }
 
 function requireAuth(req, res, next) {
@@ -408,7 +409,7 @@ setInterval(autoApprovePending, 60000);
 
 // ---- Auth
 app.post('/api/login', (req, res) => {
-    res.append('Set-Cookie', 'connect.sid=; Path=/; Domain=.oryxa.digital; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax');
+    res.append('Set-Cookie', `connect.sid=; Path=/; Domain=.${DOMAIN}; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax`);
     const { email, password } = req.body || {};
     if (!email || !password) return res.status(400).json({ error: 'email e senha são obrigatórios' });
     const users = loadUsers().users;
@@ -433,7 +434,7 @@ app.post('/api/logout', (req, res) => {
         const m = ck.match(/(?:^|;\s*)oryxa_token=([a-f0-9]{64})/);
         if (m) browserTokens.delete(m[1]);
     } catch {}
-    res.append('Set-Cookie', 'oryxa_token=; Path=/; Domain=.oryxa.digital; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax');
+    res.append('Set-Cookie', `oryxa_token=; Path=/; Domain=.${DOMAIN}; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Lax`);
     req.session.destroy(() => res.json({ success: true }));
 });
 app.get('/api/me', (req, res) => {
@@ -449,8 +450,8 @@ app.get('/api/me', (req, res) => {
 });
 
 // Cross-subdomain authorizer for Traefik forwardAuth on the per-agent
-// browser sidecars (browser-<slug>.oryxa.digital). Authorizes via the
-// oryxa_token cookie (Domain=.oryxa.digital) issued at login.
+// browser sidecars (browser-<slug>.${DOMAIN}). Authorizes via the
+// oryxa_token cookie (Domain=.${DOMAIN}) issued at login.
 app.get('/api/auth/forward', (req, res) => {
     let userId = null;
     if (req.session && req.session.userId) userId = req.session.userId;
@@ -639,7 +640,7 @@ app.get('/api/instances/:name/status', requireAuth, async (req, res) => {
     if (!/^[a-z0-9-]{2,40}$/.test(name)) return res.status(400).json({ error: 'Invalid name' });
     if (!userOwnsInstance(req.user, name)) return res.status(403).json({ error: 'forbidden' });
     const containerName = `openclaw-${name}`;
-    const domain = `${name}.oryxa.digital`;
+    const domain = `${name}.${DOMAIN}`;
     let healthy = false, cert = false, https = false, exists = false;
     try {
         const s = (await runCommand(`docker inspect ${shellQuote(containerName)} --format '{{.State.Health.Status}}'`)).trim();
@@ -679,7 +680,7 @@ app.get('/api/instances/:name/token', requireAuth, async (req, res) => {
     try {
         const token = await readInstanceToken(`openclaw-${name}`);
         (async () => { for (let i = 0; i < 6; i++) { autoApprovePending(); await new Promise(r => setTimeout(r, 500)); } })();
-        res.json({ name, token, url: `https://${name}.oryxa.digital/#token=${token}` });
+        res.json({ name, token, url: `https://${name}.${DOMAIN}/#token=${token}` });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -710,12 +711,12 @@ async function provisionBrowserSidecar(slug) {
     const labels = [
         'traefik.enable=true',
         `traefik.docker.network=openclaw-network`,
-        `traefik.http.routers.${cn}-secure.rule=Host(\`browser-${slug}.oryxa.digital\`)`,
+        `traefik.http.routers.${cn}-secure.rule=Host(\`browser-${slug}.${DOMAIN}\`)`,
         `traefik.http.routers.${cn}-secure.entrypoints=websecure`,
         `traefik.http.routers.${cn}-secure.tls=true`,
         `traefik.http.routers.${cn}-secure.tls.certresolver=cloudflare`,
         `traefik.http.routers.${cn}-secure.middlewares=browser-fwdauth@docker`,
-        `traefik.http.routers.${cn}.rule=Host(\`browser-${slug}.oryxa.digital\`)`,
+        `traefik.http.routers.${cn}.rule=Host(\`browser-${slug}.${DOMAIN}\`)`,
         `traefik.http.routers.${cn}.entrypoints=web`,
         `traefik.http.services.${cn}.loadbalancer.server.port=3000`,
     ];
@@ -855,7 +856,7 @@ ${p.instructions || '_(sem instruções adicionais)_'}
 - When using the browser tool (navigate, click, type, screenshot, etc.),
   ALWAYS pass \`target="host"\` explicitly. Never use \`target="sandbox"\`.
 - The host browser is the dedicated Chromium sidecar attached via CDP, viewable
-  live by the human at https://browser-<your-name>.oryxa.digital.
+  live by the human at https://browser-<your-name>.${DOMAIN}.
 
 ---
 
@@ -907,9 +908,9 @@ app.post('/api/instances', requireAuth, async (req, res) => {
     const labels = [
         'managed-by=openoryxa', 'managed-by=openoryxa', `subdomain=${name}`,
         'traefik.enable=true', `traefik.docker.network=${NETWORK}`,
-        `traefik.http.routers.openclaw-${name}.rule=Host(\`${name}.oryxa.digital\`)`,
+        `traefik.http.routers.openclaw-${name}.rule=Host(\`${name}.${DOMAIN}\`)`,
         `traefik.http.routers.openclaw-${name}.entrypoints=web`,
-        `traefik.http.routers.openclaw-${name}-secure.rule=Host(\`${name}.oryxa.digital\`)`,
+        `traefik.http.routers.openclaw-${name}-secure.rule=Host(\`${name}.${DOMAIN}\`)`,
         `traefik.http.routers.openclaw-${name}-secure.entrypoints=websecure`,
         `traefik.http.routers.openclaw-${name}-secure.tls=true`,
         `traefik.http.routers.openclaw-${name}-secure.tls.certresolver=cloudflare`,
@@ -945,7 +946,7 @@ app.post('/api/instances', requireAuth, async (req, res) => {
         } catch (e) { console.error('preset config cp failed:', e.message); }
         try { await installSecretsEntrypoint(containerName); console.log(`secrets-entrypoint installed on ${containerName}`); } catch (e) { console.error('secrets-entrypoint install failed:', e.message); }
         await runCommand(`docker start ${shellQuote(containerName)}`);
-        const domain = `${name}.oryxa.digital`;
+        const domain = `${name}.${DOMAIN}`;
         const cfgPath = '/home/node/.openclaw/openclaw.json';
         let token = null;
         // Wait for gateway to finish seeding its config: look for both file presence AND a non-null token.
@@ -974,7 +975,7 @@ app.post('/api/instances', requireAuth, async (req, res) => {
             const origins = JSON.stringify([
                 'http://localhost:18789', 'http://127.0.0.1:18789',
                 `https://${domain}`, `http://${domain}`,
-                'https://dashboard.oryxa.digital', 'http://dashboard.oryxa.digital',
+                `https://dashboard.${DOMAIN}`, `http://dashboard.${DOMAIN}`,
             ]);
             await runCommand(`docker exec ${shellQuote(containerName)} openclaw config set gateway.controlUi.allowedOrigins ${shellQuote(origins)} 2>&1`);
         } catch (e) { console.error('config set allowedOrigins failed:', e.message); }
@@ -1627,7 +1628,7 @@ app.post('/api/instances/:name/:action', requireAuth, async (req, res) => {
     try {
         if (action === 'delete') {
             if (req.user.role !== 'admin') return res.status(403).json({ error: 'somente admin exclui' });
-            const domain = `${name}.oryxa.digital`;
+            const domain = `${name}.${DOMAIN}`;
             // 1) stop + remove container + its anonymous volumes (-v)
             try { await runCommand(`docker rm -f -v ${shellQuote(containerName)} 2>&1`); } catch {}
             try { await deprovisionBrowserSidecar(name); console.log(`[delete] browser sidecar removed for ${name}`); } catch (e) { console.error("[delete] browser sidecar cleanup failed:", e.message); }
@@ -2930,8 +2931,8 @@ app.post('/api/external/connect', extAuth, (req, res) => {
     res.json({
         connection_id: conn.id,
         webhook_secret: conn.webhook_secret,
-        manager_url: process.env.MANAGER_PUBLIC_URL || 'https://dashboard.oryxa.digital',
-        incoming_endpoint: (process.env.MANAGER_PUBLIC_URL || 'https://dashboard.oryxa.digital') + '/api/whatsapp/incoming',
+        manager_url: process.env.MANAGER_PUBLIC_URL || `https://dashboard.${DOMAIN}`,
+        incoming_endpoint: (process.env.MANAGER_PUBLIC_URL || `https://dashboard.${DOMAIN}`) + '/api/whatsapp/incoming',
         instance: { id: instance_id, name: instance_id.charAt(0).toUpperCase() + instance_id.slice(1) },
     });
 });
@@ -3463,7 +3464,7 @@ app.post('/oauth/connect-oryxaai/complete', express.urlencoded({ extended: false
     cdb.connections.push(conn);
     saveConnections(cdb);
 
-    const managerUrl = process.env.MANAGER_PUBLIC_URL || 'https://dashboard.oryxa.digital';
+    const managerUrl = process.env.MANAGER_PUBLIC_URL || `https://dashboard.${DOMAIN}`;
     const incomingEndpoint = managerUrl + '/api/whatsapp/incoming';
 
     // POST back to Oryxa AI's oauth-finish endpoint with the connection details.
