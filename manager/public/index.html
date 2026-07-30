@@ -44,6 +44,15 @@
         .lang-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
         .lang-switcher-login { position: fixed; top: 16px; right: 16px; display: flex; gap: 4px; z-index: 100; }
         .lang-switcher-login .lang-btn { min-width: 40px; padding: 6px 10px; }
+        .login-footer { position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: rgba(8,8,18,0.96); backdrop-filter: blur(10px); border-top: 1px solid var(--border-color); }
+        .login-footer-nav { display: grid; grid-template-columns: repeat(4,1fr); border-bottom: 1px solid var(--border-color); }
+        .login-footer-nav a { padding: .8rem 1.5rem; border-right: 1px solid var(--border-color); font-size: .82rem; color: var(--text-muted); display: flex; align-items: center; gap: .5rem; transition: color .15s, background .15s; text-decoration: none; }
+        .login-footer-nav a:last-child { border-right: none; }
+        .login-footer-nav a:hover { color: var(--text-main); background: rgba(255,255,255,0.04); }
+        .login-footer-bar { padding: .65rem 2rem; display: flex; align-items: center; justify-content: center; gap: 1.5rem; font-size: .74rem; color: var(--text-muted); flex-wrap: wrap; }
+        .login-footer-bar a { color: var(--text-muted); text-decoration: none; }
+        .login-footer-bar a:hover { color: var(--text-main); }
+        @media (max-width: 600px) { .login-footer-nav { grid-template-columns: 1fr 1fr; } .login-footer-nav a:nth-child(2) { border-right: none; } .login-footer-nav a:nth-child(3) { border-right: 1px solid var(--border-color); } .login-footer-bar { gap: .8rem; padding: .5rem 1rem; } }
     </style>
 </head>
 <body>
@@ -76,6 +85,23 @@
             <button type="submit" class="btn btn-primary" style="width:100%;margin-top:8px" data-i18n="login.submit">Entrar</button>
             <p id="loginError" style="color:var(--danger);font-size:13px;margin-top:12px;min-height:18px"></p>
         </form>
+        <div class="login-footer">
+            <div class="login-footer-nav">
+                <a href="https://github.com/WeslleyHarakawa/OpenOryxa" target="_blank"><i class="fa-brands fa-github"></i> GitHub</a>
+                <a href="https://docs.oryxa.digital"><i class="fa-solid fa-book"></i> Docs</a>
+                <a href="https://oryxa.digital/#faq"><i class="fa-solid fa-circle-question"></i> FAQ</a>
+                <a href="https://x.com/weslleyharakawa" target="_blank"><i class="fa-brands fa-x-twitter"></i> X / Twitter</a>
+            </div>
+            <div class="login-footer-bar">
+                <span>&copy; 2026 <a href="https://github.com/WeslleyHarakawa" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;text-underline-offset:3px">Weslley Harakawa</a></span>
+                <a href="https://x.com/weslleyharakawa" target="_blank"><i class="fa-brands fa-x-twitter"></i> @weslleyharakawa</a>
+                <a href="https://linkedin.com/in/weslleyharakawa" target="_blank"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+                <a href="https://oryxa.digital/privacy">Privacy</a>
+                <a href="https://oryxa.digital/terms">Terms</a>
+                <a href="https://github.com/WeslleyHarakawa/OpenOryxa/blob/main/LICENSE" target="_blank">MIT License</a>
+                <a href="https://buymeacoffee.com/weslleyharakawa" target="_blank" rel="noopener" style="color:var(--cyan)"><i class="fa-regular fa-heart"></i> Buy me a coffee</a>
+            </div>
+        </div>
     </div>
 
     <!-- APP VIEW (authenticated) -->
